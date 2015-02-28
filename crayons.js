@@ -8,7 +8,7 @@ $(function() {
     swap(m, rand);
 
     if (m) {
-      setTimeout(shuffle, 50, m);
+      setTimeout(shuffle, 150, m);
     }
   };
 
@@ -61,10 +61,10 @@ $(function() {
     var currRGB = $('li:eq('+i+')').css('background-color');
     var currHSV = rgbToHSVArray(currRGB);
     var j = i - 1, k = i, compareRGB, compareHSV;
+
     while (j >= 0) {
       compareRGB = $('li:eq('+j+')').css('background-color');
       compareHSV = rgbToHSVArray(compareRGB);
-
 
       if (compareHSV[0] == currHSV[0]) {
         if (compareHSV[2] > currHSV[2]) {
@@ -77,6 +77,7 @@ $(function() {
       }
       j--;
     }
+
     i++;
     if (i <= numCrayons) {
       setTimeout(sort, 150, i);
