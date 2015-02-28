@@ -1,17 +1,30 @@
 $(function() {
   //(get options? random by default)
   //pack size (show different sections?)
+  //shuffle algorithm from class
+  var shuffle = function(m) {
+    var rand = Math.floor(Math.random() * m--);
+
+    $('li:eq('+m+')').
+      after($('li:eq('+rand+')')).
+      insertBefore($('li:eq('+rand+')'));
+
+    if (m) {
+      setTimeout(shuffle, 200, m);
+    }
+  };
+
   //shuffle the default crayons
+  $('#shuffle').on('click', function () {
+    shuffle($('.crayon').length);
+    $('#sort').show();
+    $('#shuffle').text("Drop again!");
+  });
 
   //sort the shuffled crayons
   //convert hex to hsv
   //sort by h, then s, then v (options?)
   //animate the crayons
 
-  //test swap on button click
-  $('#shuffle').on('click', function() {
-    $('li:eq(1)').
-    after($('li:eq(5)')).
-    insertBefore($('li:eq(5)'));
-  });
+  
 });
