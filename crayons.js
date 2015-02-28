@@ -1,4 +1,7 @@
 $(function() {
+  var numCrayons = $('.crayon').length - 1;
+  var color;
+
   //(get options? random by default)
   //pack size (show different sections?)
   //shuffle algorithm from class
@@ -10,7 +13,7 @@ $(function() {
       insertBefore($('li:eq('+rand+')'));
 
     if (m) {
-      setTimeout(shuffle, 200, m);
+      setTimeout(shuffle, 50, m);
     }
   };
 
@@ -18,13 +21,13 @@ $(function() {
   $('#shuffle').on('click', function () {
     shuffle($('.crayon').length);
     $('#sort').show();
-    $('#shuffle').text("Drop again!");
+    $('#shuffle').delay().text("Drop again!");
   });
 
   //sort the shuffled crayons
   //convert hex to hsv
-  var rgbToHSV = function (rgb) {
-    var r, g, b, max, min, diff, hue;
+  var rgbToHSVArray = function (rgb) {
+    var r, g, b, max, min, diff, hue, sat, val;
     var regExpArray = /rgb\((\d+), (\d+), (\d+)\)/.exec(rgb);
     r = regExpArray[1] / 255;
     g = regExpArray[2] / 255;
@@ -33,6 +36,13 @@ $(function() {
     max = Math.max(r, g, b);
     min = Math.min(r, g, b);
     diff = max - min;
+    val = (max + min) / 2;
+
+    if (diff === 0) {
+      sat = 0;
+    } else {
+      sat = diff / (1 - Math.abs(2 * val - 1));
+    }
 
     if (max == r) {
       hue = 60 * (((g - b) / diff) % 6);
@@ -41,26 +51,26 @@ $(function() {
     } else if (max == b) {
       hue = 60 * (((r - g) / diff) + 4);
     } else {
-      alert("Unable to convert "+rgb+" to hue!");
+      alert("Unable to convert "+rgb+" to HSV!");
     }
     if (hue < 0) {
       hue += 360;
     }
+    //sneaky way to check for isNaN without false positives:
+    //see developer.mozilla.org isNaN entry
     if (hue != hue) {
       hue = 0;
     }
-    return hue;
+    return [hue, sat, val];
   };
   //sort by h, then s, then v (options?)
   //animate the crayons
   //color test
-  var length = $('.crayon').length - 1;
-  var color;
 
-  while (length+1) {
-    color = $('li:eq('+length+')').css('background-color');
-    color = rgbToHSV(color);
-    $('li:eq('+length+')').append(" hue=" + color);
-    length--;
+  while (numCrayons+1) {
+    color = $('li:eq('+numCrayons+')').css('background-color');
+    color = rgbToHSVArray(color);
+    $('li:eq('+numCrayons+')').append(" hue=" + color[0] + " sat=" + color[1] + " val=" + color[2]);
+    numCrayons--;
   }
 });
