@@ -1,30 +1,23 @@
 $(function() {
   var numCrayons = $('.crayon').length - 1;
-  var color;
 
-  //(get options? random by default)
-  //pack size (show different sections?)
   //shuffle algorithm from class
   var shuffle = function(m) {
     var rand = Math.floor(Math.random() * m--);
 
-    $('li:eq('+m+')').
-      after($('li:eq('+rand+')')).
-      insertBefore($('li:eq('+rand+')'));
+    swap(m, rand);
 
     if (m) {
       setTimeout(shuffle, 50, m);
     }
   };
 
-  //shuffle the default crayons
-  $('#shuffle').on('click', function () {
-    shuffle($('.crayon').length);
-    $('#sort').show();
-    $('#shuffle').delay().text("Drop again!");
-  });
+  var swap = function(a,b) {
+    $('li:eq('+a+')').
+      after($('li:eq('+b+')')).
+      insertBefore($('li:eq('+b+')'));
+  };
 
-  //sort the shuffled crayons
   //convert hex to hsv
   var rgbToHSVArray = function (rgb) {
     var r, g, b, max, min, diff, hue, sat, val;
@@ -63,14 +56,40 @@ $(function() {
     }
     return [hue, sat, val];
   };
-  //sort by h, then s, then v (options?)
-  //animate the crayons
-  //color test
 
-  while (numCrayons+1) {
-    color = $('li:eq('+numCrayons+')').css('background-color');
-    color = rgbToHSVArray(color);
-    $('li:eq('+numCrayons+')').append(" hue=" + color[0] + " sat=" + color[1] + " val=" + color[2]);
-    numCrayons--;
-  }
+  var sort = function (i) {
+    var currRGB = $('li:eq('+i+')').css('background-color');
+    var currHSV = rgbToHSVArray(currRGB);
+    var j = i - 1, k = i, compareRGB, compareHSV;
+    while (j >= 0) {
+      compareRGB = $('li:eq('+j+')').css('background-color');
+      compareHSV = rgbToHSVArray(compareRGB);
+
+
+      if (compareHSV[0] == currHSV[0]) {
+        if (compareHSV[2] > currHSV[2]) {
+          swap(k, j);
+          k--;
+        }
+      } else if (compareHSV[0] > currHSV[0]) {
+        swap(k, j);
+        k--;
+      }
+      j--;
+    }
+    i++;
+    if (i <= numCrayons) {
+      setTimeout(sort, 150, i);
+    }
+  };
+
+  $("#sort").on('click', function() {
+    sort(0);
+  });
+
+  $('#shuffle').on('click', function () {
+    shuffle($('.crayon').length);
+    $('#sort').show();
+    $('#shuffle').delay().text("Drop again!");
+  });
 });
