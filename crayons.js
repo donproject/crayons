@@ -23,13 +23,44 @@ $(function() {
 
   //sort the shuffled crayons
   //convert hex to hsv
+  var rgbToHSV = function (rgb) {
+    var r, g, b, max, min, diff, hue;
+    var regExpArray = /rgb\((\d+), (\d+), (\d+)\)/.exec(rgb);
+    r = regExpArray[1] / 255;
+    g = regExpArray[2] / 255;
+    b = regExpArray[3] / 255;
+
+    max = Math.max(r, g, b);
+    min = Math.min(r, g, b);
+    diff = max - min;
+
+    if (max == r) {
+      hue = 60 * (((g - b) / diff) % 6);
+    } else if (max == g) {
+      hue = 60 * (((b - r) / diff) + 2);
+    } else if (max == b) {
+      hue = 60 * (((r - g) / diff) + 4);
+    } else {
+      alert("Unable to convert "+rgb+" to hue!");
+    }
+    if (hue < 0) {
+      hue += 360;
+    }
+    if (hue != hue) {
+      hue = 0;
+    }
+    return hue;
+  };
   //sort by h, then s, then v (options?)
   //animate the crayons
   //color test
-  var length = $('.crayon').length + 1;
+  var length = $('.crayon').length - 1;
+  var color;
 
-  while (length) {
+  while (length+1) {
+    color = $('li:eq('+length+')').css('background-color');
+    color = rgbToHSV(color);
+    $('li:eq('+length+')').append(" hue=" + color);
     length--;
-    $('li:eq('+length+')').append(" "+length+" " + $('li:eq('+length+')').css('background-color'));
   }
 });
