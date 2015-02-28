@@ -25,6 +25,11 @@ $(function() {
   //convert hex to hsv
   //sort by h, then s, then v (options?)
   //animate the crayons
+  //color test
+  var length = $('.crayon').length + 1;
 
-  
+  while (length) {
+    length--;
+    $('li:eq('+length+')').append(" "+length+" " + $('li:eq('+length+')').css('background-color'));
+  }
 });
